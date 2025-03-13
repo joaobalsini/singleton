@@ -27,7 +27,7 @@ defmodule Singleton do
         name,
         on_conflict \\ fn -> nil end,
         type \\ GenServer
-      ) when type in [Genserver,Supervisor] do
+      ) when type in [GenServer,Supervisor] do
     child_name = name(module, args)
 
     spec =
