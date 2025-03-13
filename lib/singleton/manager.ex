@@ -25,19 +25,19 @@ defmodule Singleton.Manager do
   def start_link(spec) do
     GenServer.start_link(
       __MODULE__,
-      [spec[:mod], spec[:args], spec[:name], spec[:on_conflict]],
+      [spec[:mod], spec[:args], spec[:name], spec[:on_conflict], spec[:type]],
       name: spec[:child_name]
     )
   end
 
   defmodule State do
     @moduledoc false
-    defstruct pid: nil, mod: nil, args: nil, name: nil, on_conflict: nil
+    defstruct pid: nil, mod: nil, args: nil, name: nil, on_conflict: nil, type: nil
   end
 
   @doc false
-  def init([mod, args, name, on_conflict]) do
-    state = %State{mod: mod, args: args, name: name, on_conflict: on_conflict}
+  def init([mod, args, name, on_conflict, type]) do
+    state = %State{mod: mod, args: args, name: name, on_conflict: on_conflict, type: type}
     {:ok, restart(state)}
   end
 
@@ -55,7 +55,7 @@ defmodule Singleton.Manager do
 
   defp restart(state) do
     start_result =
-      GenServer.start_link(state.mod, state.args, name: {:global, state.name})
+      state.type.start_link(state.mod, state.args, name: {:global, state.name})
 
     pid =
       case start_result do

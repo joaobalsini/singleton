@@ -25,8 +25,9 @@ defmodule Singleton do
         module,
         args,
         name,
-        on_conflict \\ fn -> nil end
-      ) do
+        on_conflict \\ fn -> nil end,
+        type \\ GenServer
+      ) when type in [Genserver,Supervisor] do
     child_name = name(module, args)
 
     spec =
@@ -36,7 +37,8 @@ defmodule Singleton do
          args: args,
          name: name,
          child_name: child_name,
-         on_conflict: on_conflict
+         on_conflict: on_conflict,
+         type: type
        ]}
 
     case Process.whereis(supervisor_name) do
